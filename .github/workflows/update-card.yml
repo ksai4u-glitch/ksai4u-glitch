@@ -1,0 +1,49 @@
+name: Update profile card
+
+on:
+  schedule:
+    - cron: "17 4 * * *"        # every day at 04:17 UTC (uptime ticks over, stats refresh)
+  push:
+    branches: [main]
+    paths:                      # rebuild straight away when you change your text or portrait
+      - profile.toml
+      - ascii.txt
+      - scripts/**
+  workflow_dispatch:            # adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write               # allowed to commit the rebuilt SVGs, nothing else
+
+concurrency:
+  group: profile-card
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"  # standard library only, nothing to pip install
+
+      - name: Run tests
+        run: python -m unittest discover tests
+
+      - name: Build the SVG cards
+        env:
+          # Your read-only token if you added one (counts private repos too),
+          # otherwise the built-in token (public repos only).
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN || github.token }}
+        run: python scripts/build_card.py
+
+      - name: Commit the new cards if anything changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dark_mode.svg light_mode.svg
+          if [ -f stats.json ]; then git add stats.json; fi   # missing until the first good fetch
+          git diff --cached --quiet && echo "No changes today" && exit 0
+          git commit -m "Update profile card"
+          git push

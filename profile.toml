@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------------
+# Everything written on your profile card lives in this file.
+# Edit it, commit, push. The GitHub Action rebuilds dark_mode.svg and
+# light_mode.svg for you. You never need to touch the SVGs by hand.
+# ---------------------------------------------------------------------------
+
+[card]
+title        = "saifu@ksai4u-glitch"   # the top line, like user@host in neofetch
+github_user  = "ksai4u-glitch"         # whose stats to pull from the GitHub API
+line_width   = 60                      # characters per line in the right-hand column
+
+# Uptime: "YYYY" shows whole years, "YYYY-MM-DD" shows years, months and days.
+# Use your birthday (like the original) or the day you started in networking.
+uptime_since = "2014"
+
+# true  = count private repos and their lines of code too (needs ACCESS_TOKEN, see SETUP.md)
+# false = public repos only
+include_private = true
+
+
+# ---------------------------------------------------------------------------
+# Sections. Each row is ["Key", "Value"]. An empty row [] leaves a blank line.
+# Dots in a key ("Languages.Real") are drawn the same way as the original card.
+# {uptime} is replaced with the live uptime every day.
+# ---------------------------------------------------------------------------
+
+[[section]]
+heading = ""    # first block sits straight under the title, no heading
+rows = [
+  ["OS",                    "PAN-OS, Cisco IOS-XE, FortiOS"],
+  ["Uptime",                "{uptime}"],
+  ["Host",                  "NOC / Managed Services"],
+  ["Kernel",                "Network Engineer -> Cyber Security"],
+  ["IDE",                   "VS Code, Claude Code"],
+  [],
+  ["Languages.Programming", "Python, PowerShell"],
+  ["Languages.Network",     "802.1X, RADIUS, LACP, VLANs"],
+  ["Languages.Real",        "English, Hausa, Japanese"],
+  [],
+  ["Certs.Active",          "ISC2 CC, Fortinet FCA, LogicMonitor"],
+  ["Certs.Cisco",           "AI for Networking, Intro to Cybersecurity"],
+  ["Certs.Studying",        "CCNP Security, Cisco Ethical Hacker"],
+  ["Certs.Previous",        "Palo Alto PCNSE, PSE"],
+  [],
+  ["Hobbies.Creative",      "Animation, Video, Graphic Design"],
+  ["Hobbies.Watching",      "Documentaries, Podcasts, One Piece"],
+]
+
+[[section]]
+heading = "Contact"
+rows = [
+  ["Email",    "Khalid.mohammed@rahzatech.com"],
+  ["LinkedIn", "khalid-saifullah-mohammed-9280b072"],
+]
+
+[[section]]
+heading = "GitHub Stats"
+stats = true    # this block is filled in automatically from the GitHub API
