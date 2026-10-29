@@ -1,7 +1,8 @@
 """Build dark_mode.svg and light_mode.svg for the GitHub profile README.
 
 Inputs:   profile.toml          your text (edit this)
-          ascii.txt             the ASCII portrait (make it with ascii_portrait.py)
+          ascii.txt             ASCII portrait for the light card (ascii_portrait.py)
+          ascii_dark.txt        ASCII portrait for the dark card (optional)
           GitHub GraphQL API    live stats (via github_stats.py)
 Outputs:  dark_mode.svg, light_mode.svg, stats.json (last good stats)
 
@@ -258,8 +259,11 @@ text, tspan {{ white-space: pre; }}
 # 5. Main
 # ===========================================================================
 
-def load_ascii():
-    path = ROOT / "ascii.txt"
+def load_ascii(theme, root=ROOT):
+    """Dark card uses ascii_dark.txt if there is one; everything else uses ascii.txt."""
+    path = root / "ascii_dark.txt"
+    if theme != "dark" or not path.exists():
+        path = root / "ascii.txt"
     # splitlines keeps blank rows at the bottom; they count towards the portrait's height.
     return path.read_text(encoding="utf-8").splitlines() if path.exists() else []
 
@@ -272,10 +276,8 @@ def main(argv=None):
     config = tomllib.loads((ROOT / "profile.toml").read_text(encoding="utf-8"))
     stats = get_stats(config["card"], args.offline)
     lines = info_lines(config, stats, dt.date.today())
-    portrait = load_ascii()
-
     for theme in THEMES:
-        svg = render_svg(portrait, lines, config["card"]["line_width"], theme)
+        svg = render_svg(load_ascii(theme), lines, config["card"]["line_width"], theme)
         (ROOT / f"{theme}_mode.svg").write_text(svg, encoding="utf-8")
         print(f"wrote {theme}_mode.svg")
     return 0

@@ -71,13 +71,23 @@ After that it runs by itself every day.
 
 ## 5. Changing the portrait (only if you want a new one)
 
-Your portrait is already in `ascii.txt`. It was made from your black-and-white
-caricature with:
+There are two portraits, because the same characters can't look right on both
+backgrounds:
+
+* `ascii.txt` is the **light** card. Dark parts of you become dense characters, like a pencil sketch.
+* `ascii_dark.txt` is the **dark** card. Bright parts of you become dense characters, lit like a photo.
+  The light background is cut out first (a paint-bucket fill from the edges that
+  stops at your outline), so it doesn't fill with `@@@`.
+
+Both were made from your black-and-white caricature with:
 
 ```
 python scripts/ascii_portrait.py portrait.webp --invert --gamma 2 --thicken 3 --contrast 1.1 --crop-top 0
+python scripts/ascii_portrait.py portrait.webp --remove-background --contrast 1.3 --crop-top 0 --out ascii_dark.txt
 python scripts/build_card.py --offline
 ```
+
+If you delete `ascii_dark.txt`, the dark card falls back to `ascii.txt`.
 
 You need Python 3.11+ and Pillow (`python -m pip install pillow`) on your own PC.
 On the work PC, where `Activate.ps1` is blocked, use `.venv\Scripts\python.exe`
@@ -85,7 +95,9 @@ in place of `python` in those commands.
 
 Open `dark_mode.svg` in a browser to check it. What each option does:
 
-* `--invert`: the background is lighter than you, so it comes out blank
+* `--invert`: dense characters where you are dark (the light card)
+* `--remove-background`: blank out a light background (the dark card). If bits of
+  you vanish, lower `--bg-threshold` (default 200)
 * `--gamma 2`: mid-tones like skin go quiet, so the eyes, brows, smile and beard stand out
 * `--thicken 3`: thin lines survive being shrunk
 * `--contrast`: raise it if the result looks muddy

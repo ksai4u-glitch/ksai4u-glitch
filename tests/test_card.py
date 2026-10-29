@@ -6,6 +6,7 @@ answers each query from a small script of canned responses.
 
 import datetime as dt
 import sys
+import tempfile
 import tomllib
 import unittest
 import xml.etree.ElementTree as ET
@@ -65,6 +66,15 @@ class LayoutTests(unittest.TestCase):
         last_text_y = float(info_text.findall(f"{ns}tspan")[-1].get("y"))
         self.assertAlmostEqual(last_portrait_y, last_text_y, delta=build_card.LINE_H)
         self.assertEqual(portrait_text.get("font-size"), "8px")
+
+    def test_dark_card_uses_its_own_portrait_when_there_is_one(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "ascii.txt").write_text("light\n")
+            self.assertEqual(build_card.load_ascii("dark", root), ["light"])   # fallback
+            (root / "ascii_dark.txt").write_text("dark\n\n")
+            self.assertEqual(build_card.load_ascii("dark", root), ["dark", ""])  # blank row kept
+            self.assertEqual(build_card.load_ascii("light", root), ["light"])
 
     def test_short_portrait_is_never_enlarged(self):
         self.assertEqual(build_card.portrait_scale(["x"] * 5, [[]] * 26), 1.0)
@@ -161,6 +171,14 @@ class PortraitTests(unittest.TestCase):
         quiet = ascii_portrait.to_ascii(grey, 1, 1, invert=True, gamma=2)[0]
         ramp = ascii_portrait.RAMP
         self.assertLess(ramp.index(quiet), ramp.index(plain))
+
+    def test_background_cut_out_stops_at_the_outline(self):
+        from PIL import ImageDraw
+        img = Image.new("L", (400, 400), 240)                     # light background
+        ImageDraw.Draw(img).ellipse((100, 100, 300, 300), fill=230, outline=0, width=12)
+        mask = ascii_portrait.background_mask(img)
+        self.assertEqual(mask.getpixel((20, 20)), 0)              # background found
+        self.assertEqual(mask.getpixel((200, 200)), 255)          # light inside the outline kept
 
     def test_crop_matches_grid_shape(self):
         img = Image.new("L", (1440, 1440))

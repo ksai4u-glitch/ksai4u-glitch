@@ -7,7 +7,7 @@ on:
     branches: [main]
     paths:                      # rebuild straight away when you change your text or portrait
       - profile.toml
-      - ascii.txt
+      - ascii*.txt
       - scripts/**
   workflow_dispatch:            # adds a "Run workflow" button in the Actions tab
 
